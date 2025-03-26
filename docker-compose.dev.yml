@@ -1,0 +1,16 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dev_ludio_backend
+    ports:
+      - "${PORT}:${PORT}"     # .env에서 포트 가져오기
+    volumes:
+      - ./app:/code/app
+      - ./requirements.txt:/code/requirements.txt
+    environment:
+      - PORT=${PORT}
+      - DEBUG=${DEBUG}
+      - SECRET_KEY=${SECRET_KEY}
+    command: uvicorn app.main:app --host 0.0.0.0 --port ${PORT} --reload
