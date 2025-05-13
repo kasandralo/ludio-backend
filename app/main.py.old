@@ -6,13 +6,9 @@ from starlette.requests import Request
 from starlette.responses import Response
 
 from app.config import settings
-from app.api.routes.session import router as session_router
+from app.api.routes import router
 
-app = FastAPI(
-    title="Ludio API",
-    version="0.1.0",
-    debug=settings.debug
-)
+app = FastAPI(debug=settings.debug)
 
 class CharsetMiddleware(BaseHTTPMiddleware):
     async def dispatch(
@@ -23,16 +19,18 @@ class CharsetMiddleware(BaseHTTPMiddleware):
             response.headers["Content-Type"] = "application/json; charset=utf-8"
         return response
 
-app.add_middleware(
-    CharsetMiddleware,
-    allow_origins=["*"],  # 추후 도메인 지정 권장
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+app.add_middleware(CharsetMiddleware)
+app.include_router(router)
 
-app.include_router(session_router, prefix="/api")
+# @app.get("/")
+# def read_root():
+#     return {
+#         "message": "Ludio backend up!",
+#         "debug": settings.debug,
+#         "port": settings.port
+#     }
 
-@app.get("/")
-async def root():
-    return {"message": "Welcome to Ludio API"}
+# @app.get("/data")
+# def get_data():
+#     return {"title": "안녕하세요", "description": "FastAPI에서 한글 인코딩 테스트"}
+
